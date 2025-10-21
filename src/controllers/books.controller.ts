@@ -8,6 +8,17 @@ export const createBook = async (req: Request, res: Response) => {
     console.log("Request body:", req.body);
     const { title, writer, publisher, publication_year, description, price, stock_quantity, genre_id } = req.body;
 
+    // Validasi input
+    if (!title || !writer || !publisher || !publication_year || !price || !stock_quantity || !genre_id) {
+      return res.status(400).json(response(false, "All required fields must be provided"));
+    }
+
+    // Cek apakah genre_id valid
+    const genreExists = await prisma.genres.findUnique({ where: { id: genre_id } });
+    if (!genreExists) {
+      return res.status(400).json(response(false, "Invalid genre_id"));
+    }
+
     // Cek duplikasi judul
     const existing = await prisma.books.findUnique({ where: { title } });
     if (existing) return res.status(400).json(response(false, "Book title already exists"));
@@ -28,6 +39,9 @@ export const createBook = async (req: Request, res: Response) => {
     res.status(201).json(response(true, "Book created successfully", newBook));
   } catch (error) {
     console.error("Error creating book:", error);
+    if (error && typeof error === 'object' && 'code' in error && error.code === "P2003") {
+      return res.status(400).json(response(false, "Invalid genre_id: Genre does not exist"));
+    }
     res.status(500).json(response(false, "Internal server error", error));
   }
 };

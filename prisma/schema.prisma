@@ -1,5 +1,3 @@
-// prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,9 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ==============================
-//         USERS TABLE
-// ==============================
 model users {
   id         String   @id @default(uuid())
   username   String?
@@ -19,64 +14,44 @@ model users {
   password   String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-
-  // Relasi ke orders
   orders     orders[]
 }
 
-// ==============================
-//         GENRES TABLE
-// ==============================
 model genres {
-  id         String   @id @default(uuid())
-  name       String   @unique
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id         String    @id @default(uuid())
+  name       String    @unique
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
   deleted_at DateTime?
-
-  // Relasi ke books
   books      books[]
 }
 
-// ==============================
-//         BOOKS TABLE
-// ==============================
 model books {
-  id              String   @id @default(uuid())
-  title           String   @unique
-  writer          String
-  publisher       String
-  description     String?
+  id               String        @id @default(uuid())
+  title            String        @unique
+  writer           String
+  publisher        String
+  description      String?
   publication_year Int
-  price           Float
-  stock_quantity  Int
-  genre_id        String
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-  deleted_at      DateTime?
-
-  // Relasi
-  genre genres @relation(fields: [genre_id], references: [id])
-  order_items order_items[]
+  price            Float
+  stock_quantity   Int
+  genre_id         String
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
+  deleted_at       DateTime?
+  genre            genres        @relation(fields: [genre_id], references: [id])
+  order_items      order_items[]
 }
 
-// ==============================
-//         ORDERS TABLE
-// ==============================
 model orders {
-  id         String   @id @default(uuid())
+  id         String        @id @default(uuid())
   user_id    String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  // Relasi
-  user   users @relation(fields: [user_id], references: [id])
-  items  order_items[]
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
+  items      order_items[]
+  user       users         @relation(fields: [user_id], references: [id])
 }
 
-// ==============================
-//     ORDER ITEMS TABLE
-// ==============================
 model order_items {
   id         String   @id @default(uuid())
   quantity   Int
@@ -84,8 +59,6 @@ model order_items {
   book_id    String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-
-  // Relasi
-  order  orders @relation(fields: [order_id], references: [id])
-  book   books  @relation(fields: [book_id], references: [id])
+  book       books    @relation(fields: [book_id], references: [id])
+  order      orders   @relation(fields: [order_id], references: [id])
 }

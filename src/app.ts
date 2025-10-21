@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoute from "./routes/auth.route";
 import booksRoute from "./routes/books.route";
+import genreRoute from "./routes/genre.route";
 
 dotenv.config();
 
@@ -25,9 +26,15 @@ app.use("/auth", authRoute);
 
 app.use("/books", booksRoute);
 
+app.use("/genre", genreRoute);
+
 // Placeholder routes (nanti kita tambahkan Auth, Books, dll)
 app.get("/", (req, res) => {
   res.json({ success: true, message: "Welcome to IT Literature Shop API" });
 });
+
+import transactionRoute from "./routes/transaction.route";
+
+app.use("/transactions", transactionRoute);
 
 export default app;
