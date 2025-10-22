@@ -12,10 +12,10 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
   const token = header.split(" ")[1];
   const decoded = verifyToken(token);
 
-  if (!decoded) {
+  if (!decoded || typeof decoded === 'string') {
     return res.status(401).json(response(false, "Invalid or expired token"));
   }
 
-  (req as any).user = decoded;
+  req.user = decoded as { id: string; email: string };
   next();
 };

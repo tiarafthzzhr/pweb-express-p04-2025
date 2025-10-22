@@ -5,7 +5,10 @@ import { response } from "../utils/response";
 // POST /transactions
 export const createTransaction = async (req: Request, res: Response) => {
   try {
-    const user = (req as any).user;
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json(response(false, "Authentication required"));
+    }
     const { items } = req.body; // [{ book_id, quantity }]
 
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -58,7 +61,10 @@ export const createTransaction = async (req: Request, res: Response) => {
 // GET /transactions
 export const getAllTransactions = async (req: Request, res: Response) => {
   try {
-    const user = (req as any).user;
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json(response(false, "Authentication required"));
+    }
     const orders = await prisma.orders.findMany({
       where: { user_id: user.id },
       include: {
@@ -78,7 +84,10 @@ export const getAllTransactions = async (req: Request, res: Response) => {
 // GET /transactions/:transaction_id
 export const getTransactionDetail = async (req: Request, res: Response) => {
   try {
-    const user = (req as any).user;
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json(response(false, "Authentication required"));
+    }
     const { transaction_id } = req.params;
 
     const order = await prisma.orders.findUnique({
@@ -102,6 +111,10 @@ export const getTransactionDetail = async (req: Request, res: Response) => {
 // GET /transactions/statistics
 export const getTransactionStatistics = async (req: Request, res: Response) => {
   try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json(response(false, "Authentication required"));
+    }
     const totalTransactions = await prisma.orders.count();
 
     const orders = await prisma.orders.findMany({
